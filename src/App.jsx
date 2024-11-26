@@ -16,6 +16,7 @@ import Login from './assets/components/Login'
 import Register from './assets/components/Register'
 import Table from './assets/components/TableCarrito'
 import HienBowl from './assets/components/HienBolw'
+import ProductForm from './assets/components/ProductForm'
 function App() {
 
   const desktop = [
@@ -88,6 +89,10 @@ function App() {
 
         <Route path='/carrito' element={
           <Table/>
+        } />
+
+        <Route path='/rproducto' element={
+          <ProductForm/>
         } />
       </Routes>
       
