@@ -22,14 +22,13 @@ export default function Banner({ desktopImages, mobileImages} ) {
   
   
   const images = isMobile ? mobileImages: desktopImages
-  console.log(images);
   
   if(!desktopImages.length)return null
  
   return (
-    <Carousel className="responsive-banner">
+    <Carousel className="responsive-banner" >
       {images.map((image, index) => (
-        <Carousel.Item key={index}>
+        <Carousel.Item key={index} style={{height: "87vh"}}>
           <img
             className="d-block w-100"
             src={image.src}

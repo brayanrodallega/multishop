@@ -9,10 +9,13 @@ import img3 from './assets/images/desktop/img3.jpg'
 import img2M from './assets/images/mobile/img2.jpg'
 import img1M from './assets/images/mobile/img1.jpg'
 import img3M from './assets/images/mobile/img3.jpg'
+import png1 from './assets/images/png/tienda-1-8.png'
+import png2 from './assets/images/png/tienda-2-8.png'
 import GalleryProducts from './assets/components/GalleryProducts'
 import Login from './assets/components/Login'
 import Register from './assets/components/Register'
 import Table from './assets/components/TableCarrito'
+import HienBowl from './assets/components/HienBolw'
 function App() {
 
   const desktop = [
@@ -52,7 +55,23 @@ function App() {
       <Nav/>
       <Routes>
         <Route path='/' element={
-          <Banner desktopImages={desktop} mobileImages={mobile}/>
+          <>
+            <Banner desktopImages={desktop} mobileImages={mobile}/>
+            <HienBowl 
+            image={png1} 
+            title={"Bienvenido"} 
+            imagePosition='left' 
+            description={"Sunt dolore e iusmod voluptate eiusmod ad sint duis qui dolor in. Mollit nulla nisi tempor velit eiusmod velit cupidatat. Cupidatat exercitation proident dolore deserunt aute ipsum do sint adipisicing do. Fugiat labore adipisicing ipsum anim cillum tempor incididunt." }
+            />
+            
+            <HienBowl 
+            image={png2} 
+            title={"Bienvenido"} 
+            imagePosition='right' 
+            description={"Sunt dolore e iusmod voluptate eiusmod ad sint duis qui dolor in. Mollit nulla nisi tempor velit eiusmod velit cupidatat. Cupidatat exercitation proident dolore deserunt aute ipsum do sint adipisicing do. Fugiat labore adipisicing ipsum anim cillum tempor incididunt." }
+            />
+            
+          </>
         }/>
         <Route path='/productos' element={
           <GalleryProducts />
