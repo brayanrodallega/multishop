@@ -1,14 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Trash2 } from 'lucide-react';
-
-
+import '../styles/table.css';
 
 export default function Table() {
   const [products, setProducts] = useState(JSON.parse(localStorage.getItem('productosCarrito')));
+  const [discountCode, setDiscountCode] = useState(""); // Estado para el código de descuento
+  const [discountApplied, setDiscountApplied] = useState(false); // Estado para saber si el descuento se ha aplicado
+  const [total, setTotal] = useState(0); // Total del carrito, incluyendo descuento si es válido
+  const discount = 0.20; // Descuento del 20%
 console.log(products);
+
 if(!products) return (<div>
     no hay productos
-  </div>)
+  </div>);
+
   const updateQuantity = (id, newQuantity) => {
     setProducts(products.map(product => 
       product.id === id ? { ...product, cantidad: Math.max(1, newQuantity) } : product
@@ -20,11 +25,36 @@ if(!products) return (<div>
     const newProductos = products.filter(product => product.id !== id)
     localStorage.setItem('productosCarrito' , JSON.stringify(newProductos));
     window.dispatchEvent(new Event('storage'))
-
   };
 
-  const total = products.reduce((sum, product) => sum + product.precio * product.cantidad, 0);
- 
+  //const total = products.reduce((sum, product) => sum + product.precio * product.cantidad, 0);
+
+   // Calcular el total antes de aplicar el descuento
+   const calculateTotal = () => {
+    const totalAmount = products.reduce((sum, product) => sum + product.precio * product.cantidad, 0);
+    setTotal(totalAmount);
+  };
+
+  // Manejar el ingreso del código de descuento
+  const handleDiscountChange = (e) => {
+    setDiscountCode(e.target.value);
+  };
+
+  const applyDiscount = () => {
+    if (discountCode === "FB2024") {
+      setDiscountApplied(true);
+    } else {
+      alert("Código de descuento inválido");
+      setDiscountApplied(false);
+    }
+  };
+
+  const finalTotal = discountApplied ? (total * (1 - discount)).toFixed(2) : total.toFixed(2);
+
+  useEffect(() => {
+    calculateTotal();
+  }, [products]);
+
   return (
     <div className="container mt-5">
       <h2 className="mb-4">Carrito de compras</h2>
@@ -65,10 +95,34 @@ if(!products) return (<div>
           </tbody>
         </table>
       </div>
+      {/* Formulario de cupón */}
+      <div>
+        <label>Codigo de descuento:</label>
+        <input
+          id="codDes"
+          type="text"
+          value={discountCode}
+          onChange={handleDiscountChange}
+          className="form-control"
+        />
+        <button
+          onClick={applyDiscount}
+          className="btn btn-primary mt-2"
+        >
+          Aplicar cupón
+        </button>
+      </div>
+
+      {/* Muestra el total con o sin descuento */}
       <div className="d-flex justify-content-between align-items-center mt-4">
         <button className="btn btn-warning">Continuar comprando</button>
         <div className="text-end">
-          <h4>Total ${total.toFixed(2)} USD</h4>
+        {discountApplied && (
+            <div className="text-danger original-price">
+              Antes: ${total.toFixed(2)} USD
+            </div>
+          )}
+          <h4>Total: ${finalTotal} USD</h4>
           <button className="btn btn-success">Pagar</button>
         </div>
       </div>
