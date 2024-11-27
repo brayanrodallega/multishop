@@ -1,43 +1,27 @@
 import { useState, useEffect } from 'react';
 import { Trash2 } from 'lucide-react';
 
-
 export default function Table() {
   const [products, setProducts] = useState(
     JSON.parse(localStorage.getItem('productosCarrito')) || []
   );
   const [isPayPalReady, setIsPayPalReady] = useState(false);
-
+  const [discountCode, setDiscountCode] = useState("");
+  const [discountApplied, setDiscountApplied] = useState(false);
+  const discount = 0.20;
   const clientId = 'AVlBrTuVr6wxEw869imS021x8s3oT1AM0jtdkvUs4pnfFDrNNCe3H3oIo_imsiso-1C29wJy5ja6iGVR';
 
   useEffect(() => {
-    // Cargar el SDK de PayPal solo si no está ya disponible
     if (!window.paypal) {
       const script = document.createElement('script');
       script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}`;
       script.async = true;
-      script.onload = () => setIsPayPalReady(true); // SDK cargado
+      script.onload = () => setIsPayPalReady(true);
       document.body.appendChild(script);
     } else {
-      setIsPayPalReady(true); // SDK ya cargado
+      setIsPayPalReady(true);
     }
   }, [clientId]);
-
-
-import '../styles/table.css';
-
-export default function Table() {
-  const [products, setProducts] = useState(JSON.parse(localStorage.getItem('productosCarrito')));
-  const [discountCode, setDiscountCode] = useState(""); // Estado para el código de descuento
-  const [discountApplied, setDiscountApplied] = useState(false); // Estado para saber si el descuento se ha aplicado
-  const [total, setTotal] = useState(0); // Total del carrito, incluyendo descuento si es válido
-  const discount = 0.20; // Descuento del 20%
-console.log(products);
-
-if(!products) return (<div>
-    no hay productos
-  </div>);
-
 
   const updateQuantity = (id, newQuantity) => {
     setProducts(
@@ -50,70 +34,16 @@ if(!products) return (<div>
   };
 
   const removeProduct = (id) => {
-
     const newProducts = products.filter((product) => product.id !== id);
     setProducts(newProducts);
     localStorage.setItem('productosCarrito', JSON.stringify(newProducts));
     window.dispatchEvent(new Event('storage'));
   };
 
-  const total = products.reduce(
-    (sum, product) => sum + product.precio * product.cantidad,
-    0
-  );
-
-  useEffect(() => {
-    if (isPayPalReady && products.length > 0) {
-      // Limpia el contenedor antes de renderizar un nuevo botón
-      const paypalContainer = document.getElementById('paypal-button-container');
-      if (paypalContainer) {
-        paypalContainer.innerHTML = '';
-      }
-
-      window.paypal.Buttons({
-        createOrder: (data, actions) => {
-          return actions.order.create({
-            purchase_units: [
-              {
-                amount: {
-                  value: total.toFixed(2), // Total en USD
-                },
-              },
-            ],
-          });
-        },
-        onApprove: (data, actions) => {
-          return actions.order.capture().then((details) => {
-            alert(`Pago completado por ${details.name.given_name}`);
-            console.log('Detalles del pago:', details);
-          });
-        },
-        onError: (err) => {
-          console.error('Error al procesar el pago:', err);
-        },
-      }).render('#paypal-button-container');
-    }
-  }, [isPayPalReady, total, products]);
-
-  if (!products || products.length === 0) {
-    return <div>No hay productos</div>;
-  }
-
-    setProducts(products.filter(product => product.id !== id));
-    const newProductos = products.filter(product => product.id !== id)
-    localStorage.setItem('productosCarrito' , JSON.stringify(newProductos));
-    window.dispatchEvent(new Event('storage'))
+  const calculateTotal = () => {
+    return products.reduce((sum, product) => sum + product.precio * product.cantidad, 0);
   };
 
-  //const total = products.reduce((sum, product) => sum + product.precio * product.cantidad, 0);
-
-   // Calcular el total antes de aplicar el descuento
-   const calculateTotal = () => {
-    const totalAmount = products.reduce((sum, product) => sum + product.precio * product.cantidad, 0);
-    setTotal(totalAmount);
-  };
-
-  // Manejar el ingreso del código de descuento
   const handleDiscountChange = (e) => {
     setDiscountCode(e.target.value);
   };
@@ -127,12 +57,41 @@ if(!products) return (<div>
     }
   };
 
+  const total = calculateTotal();
   const finalTotal = discountApplied ? (total * (1 - discount)).toFixed(2) : total.toFixed(2);
 
   useEffect(() => {
-    calculateTotal();
-  }, [products]);
+    if (isPayPalReady && products.length > 0) {
+      const paypalContainer = document.getElementById('paypal-button-container');
+      if (paypalContainer) {
+        paypalContainer.innerHTML = '';
+      }
 
+      window.paypal.Buttons({
+        createOrder: (data, actions) => {
+          return actions.order.create({
+            purchase_units: [
+              {
+                amount: { value: finalTotal },
+              },
+            ],
+          });
+        },
+        onApprove: (data, actions) => {
+          return actions.order.capture().then((details) => {
+            alert(`Pago completado por ${details.name.given_name}`);
+          });
+        },
+        onError: (err) => {
+          console.error('Error al procesar el pago:', err);
+        },
+      }).render('#paypal-button-container');
+    }
+  }, [isPayPalReady, finalTotal]);
+
+  if (!products || products.length === 0) {
+    return <div>No hay productos</div>;
+  }
 
   return (
     <div className="container mt-5">
@@ -179,9 +138,8 @@ if(!products) return (<div>
           </tbody>
         </table>
       </div>
-      {/* Formulario de cupón */}
       <div>
-        <label>Codigo de descuento:</label>
+        <label>Código de descuento:</label>
         <input
           id="codDes"
           type="text"
@@ -189,27 +147,20 @@ if(!products) return (<div>
           onChange={handleDiscountChange}
           className="form-control"
         />
-        <button
-          onClick={applyDiscount}
-          className="btn btn-primary mt-2"
-        >
+        <button onClick={applyDiscount} className="btn btn-primary mt-2">
           Aplicar cupón
         </button>
       </div>
-
-      {/* Muestra el total con o sin descuento */}
       <div className="d-flex justify-content-between align-items-center mt-4">
         <button className="btn btn-warning">Continuar comprando</button>
         <div className="text-end">
-
-        {discountApplied && (
+          {discountApplied && (
             <div className="text-danger original-price">
               Antes: ${total.toFixed(2)} USD
             </div>
           )}
-         <h4>Total ${total.toFixed(2)} USD</h4>
+          <h4>Total ${finalTotal} USD</h4>
           <div id="paypal-button-container"></div>
-
         </div>
       </div>
     </div>

@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react';
 
 import Swal from 'sweetalert2'; // Importa SweetAlert2
-import NavTabs from './NavTabs';
-
 import Card from './Card';
-import iconoTesoro from '../../assets/images/tesoro.png'
+import iconoTesoro from '../../assets/images/tesoro.png';
 
 export default function GalleryProducts() {
   const [value, setValue] = useState([]); // Productos filtrados a mostrar
@@ -24,7 +22,6 @@ export default function GalleryProducts() {
   useEffect(() => {
     const apiURL = 'https://multishopapi.onrender.com/api/productos';
 
-
     const fetchProducts = async () => {
       try {
         const response = await fetch(apiURL);
@@ -43,24 +40,6 @@ export default function GalleryProducts() {
 
     fetchProducts();
   }, []);
-
-  const startGame = () => {
-    // Función para seleccionar N elementos aleatorios de una lista
-    const getRandomItems = (arr, count) => {
-      const shuffled = [...arr].sort(() => 0.5 - Math.random()); // Mezcla los elementos
-      return shuffled.slice(0, count); // Selecciona los primeros 'count' elementos
-    };
-  
-    // Selecciona tesoros de los productos mostrados actualmente (value)
-    const treasures = getRandomItems(value, treasuresToFind).map((product) => product._id);
-  
-    setHiddenTreasures(treasures); // Establece los tesoros seleccionados
-    setIsGameActive(true); // Activa el juego
-    setTimeLeft(30); // Reinicia el temporizador
-    setFoundTreasures(0); // Reinicia el contador de tesoros encontrados
-  };
-  
-
   const handleTreasureClick = (productId) => {
     if (hiddenTreasures.includes(productId)) {
       setFoundTreasures((prev) => {
@@ -112,26 +91,18 @@ export default function GalleryProducts() {
     }
   };
   
-  
+  const startGame = () => {
+    const getRandomItems = (arr, count) => {
+      const shuffled = [...arr].sort(() => 0.5 - Math.random());
+      return shuffled.slice(0, count);
+    };
 
-  useEffect(() => {
-    if (timeLeft > 0 && isGameActive) {
-      const timer = setTimeout(() => setTimeLeft((prev) => prev - 1), 1000);
-      return () => clearTimeout(timer);
-    } else if (timeLeft === 0 && isGameActive) {
-      setIsGameActive(false); // Termina el juego cuando el tiempo llega a 0
-      Swal.fire('¡El tiempo se acabó! ¿Encontraste todos los tesoros?');
-    }
-    if (foundTreasures === treasuresToFind && timeLeft > 0) {
-      setIsGameActive(false); // Finaliza el juego cuando se encuentran todos los tesoros
-      Swal.fire(
-        '¡Felicidades!',
-        'Has encontrado todos los tesoros y ganado un cupón: FB2024',
-        'success'
-      );
-    }
-  }, [timeLeft, isGameActive, foundTreasures]);
-
+    const treasures = getRandomItems(value, treasuresToFind).map((product) => product._id);
+    setHiddenTreasures(treasures);
+    setIsGameActive(true);
+    setTimeLeft(30);
+    setFoundTreasures(0);
+  };
 
   const handleSearch = (e) => {
     const query = e.target.value.toLowerCase();
@@ -164,7 +135,6 @@ export default function GalleryProducts() {
   return (
     <>
       <div className="container py-5">
-
         <h2 className="text-center mb-5">Nuestros Productos</h2>
 
         {/* Input de búsqueda */}
@@ -188,35 +158,32 @@ export default function GalleryProducts() {
             >
               {filter}
             </button>
+          ))}
+        </div>
 
-        <h2 className="text-center mb-3">Nuestros Productos</h2>
+        {/* Juego de búsqueda del tesoro */}
         <p className="text-center">
           Encuentra los {treasuresToFind} tesoros ocultos entre los productos y gana puntos.
         </p>
         <p className="text-center">
-            Tesoros encontrados: {foundTreasures}/{treasuresToFind}
+          Tesoros encontrados: {foundTreasures}/{treasuresToFind}
         </p>
-        
-        {/* Botón para iniciar el juego */}
+
         {!isGameActive && (
           <div className="text-center mb-4">
-            <button
-              className="btn btn-primary"
-              onClick={startGame}
-              //disabled={isGameActive}
-            >
+            <button className="btn btn-primary" onClick={startGame}>
               ¡Iniciar Búsqueda del Tesoro!
             </button>
           </div>
         )}
 
-        {/* Muestra el tiempo restante si el juego está activo */}
         {isGameActive && (
           <div className="text-center mb-4">
             <h3>Tiempo restante: {timeLeft} segundos</h3>
           </div>
         )}
-        <NavTabs setTab={handleTabChange} />
+
+        {/* Galería de productos */}
         <div className="gallery">
           {value.map((product) => (
             <div
@@ -231,41 +198,22 @@ export default function GalleryProducts() {
                 text={product.description}
                 precio={product.price}
               />
-              {/* Indicador de tesoro oculto */}
               {isGameActive && hiddenTreasures.includes(product._id) && (
                 <img
-                src={iconoTesoro} 
-                alt="Tesoro oculto"
-                style={{
-                  position: 'absolute',
-                  top: '10px',
-                  right: '10px',
-                  width: '50px',
-                  cursor: 'pointer'
-                }}
+                  src={iconoTesoro}
+                  alt="Tesoro oculto"
+                  style={{
+                    position: 'absolute',
+                    top: '10px',
+                    right: '10px',
+                    width: '50px',
+                    cursor: 'pointer',
+                  }}
                   title="¡Haz clic para reclamar el tesoro!"
                 />
               )}
             </div>
           ))}
-        </div>
-
-        {/* Galería de productos */}
-        <div className="gallery">
-          {value.length > 0 ? (
-            value.map((product) => (
-              <Card
-                key={product._id}
-                id={product._id}
-                url={product.image}
-                title={product.title}
-                text={product.description}
-                precio={product.price}
-              />
-            ))
-          ) : (
-            <p className="text-center">No se encontraron productos.</p>
-          )}
         </div>
       </div>
     </>
