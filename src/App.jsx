@@ -18,6 +18,7 @@ import Table from "./assets/components/TableCarrito";
 import HienBowl from "./assets/components/HienBolw";
 import { MyContext } from "./assets/utils/context";
 import { useState } from "react";
+import ProductTable from "./assets/components/ProductTable";
 function App() {
   const [value, setValue] = useState({});
   const desktop = [
@@ -126,7 +127,10 @@ function App() {
             }
           />
         </Routes>
-        <Routes path="/dashboard" element={<main></main>} />
+        <Routes path="/dashboard" element={<main>
+          <ProductTable />
+
+        </main>} />
       </div>
     </MyContext.Provider>
   );

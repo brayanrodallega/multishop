@@ -20,8 +20,7 @@ export default function Nav() {
         };
       }, []);
       const handleLogout = () => {
-        setLogin(false)
-        localStorage.removeItem('login_success')
+        setValue(delete value.user)
         window.dispatchEvent(new Event('storage'))
 
       }
@@ -60,7 +59,7 @@ export default function Nav() {
                     <Link className="nav-link" to='/contacto' >Contacto</Link>
                 </li>
                 {
-                  value?.user 
+                  value.user && value.user.role === 'admin' 
                   ? <li className="nav-item dark:text-red">
                     <Link className="nav-link" to='/dashboard' >dashboard</Link>
                 </li>

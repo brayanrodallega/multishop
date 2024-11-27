@@ -1,14 +1,16 @@
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import { useAppContext } from "../utils/context";
 
 // eslint-disable-next-line react/prop-types
 export default function Card({id, url, title , text , precio , cantidad = 1}) {
   const navigate = useNavigate()
+  const {value} = useAppContext()
   const handleAddProducto = () => {
-    let user = JSON.parse(localStorage.getItem('login_success')) || false
-    console.log(user);
     
-if(!user) {
+    console.log(value.user);
+    
+if(!value.user) {
     return Swal.fire({
         icon: 'info',
         title: 'Iniciar Sesion',
