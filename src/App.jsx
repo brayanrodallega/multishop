@@ -21,6 +21,7 @@ import { MyContext } from "./assets/utils/context";
 import { useState } from "react";
 import ProductTable from "./assets/components/ProductTable";
 import ProductForm from "./assets/components/ProductForm";
+import { registrarProductos } from "./assets/utils/consultas";
 
 function App() {
   const [value, setValue] = useState({});
@@ -59,6 +60,17 @@ function App() {
       description: "no hay nada mejor",
     },
   ];
+  const handleSubmit = (formData) => {
+    registrarProductos(formData,value.user.token)
+        .then(response => {
+            console.log('Producto registrado:', response);
+            // Aquí puedes manejar la respuesta, por ejemplo, cerrar el modal, actualizar la lista de productos, etc.
+        })
+        .catch(error => {
+            console.error('Error al registrar el producto:', error);
+            // Manejo de errores
+        });
+};
   return (
     <MyContext.Provider value={{ value, setValue }}>
       <div className="flex-column justify-content-center main">
@@ -131,7 +143,7 @@ function App() {
             }
           />
         <Route path="/dashboard" element={<main>
-          <ProductForm show={show} onHide={() => setShow(false)}/>
+          <ProductForm onSubmit={handleSubmit} show={show} onHide={() => setShow(false)}/>
 
           <ProductTable setShow={e => setShow(e)} show={show}/>
           </main>} />

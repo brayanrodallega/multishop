@@ -28,3 +28,21 @@ export const obtenerProductos = () => {
     .then(res => res.json())
     .catch(err => console.error(err))
 }
+
+export const registrarProductos = (formData,token) => {
+    return fetch(`${basePath}/api/productos/`, {
+        method: 'POST',
+        headers: {'Authorization': token},
+        body: formData  // Pasamos directamente el objeto FormData
+    })
+    .then(res => res.json())
+    .catch(err => console.error(err))
+}
+export const obtenerCategorias = () => {
+    return fetch(`${basePath}/api/categorias/`, {
+        method: 'GET',
+        headers: { "Content-Type": "application/json"}
+    })
+    .then(res => res.json())
+    .catch(err => console.error(err))
+}
