@@ -11,7 +11,7 @@ export default function GalleryProducts() {
   const [error, setError] = useState(null); // Estado de error
   const [hiddenTreasures, setHiddenTreasures] = useState([]); // Tesoros ocultos
   const [foundTreasures, setFoundTreasures] = useState(0); // Tesoros encontrados
-  const treasuresToFind = 3; // Número total de tesoros a encontrar
+  const treasuresToFind = 7; // Número total de tesoros a encontrar
   const [isGameActive, setIsGameActive] = useState(false); // Indica si el juego está activo
   const [timeLeft, setTimeLeft] = useState(0); // Tiempo restante en segundos
 
@@ -194,8 +194,7 @@ export default function GalleryProducts() {
                   top: '10px',
                   right: '10px',
                   width: '50px',
-                  cursor: 'pointer',
-                  border: 'solid'
+                  cursor: 'pointer'
                 }}
                   title="¡Haz clic para reclamar el tesoro!"
                 />
