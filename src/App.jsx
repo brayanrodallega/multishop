@@ -1,3 +1,4 @@
+
 import { Route, Routes } from "react-router-dom";
 import "./App.css";
 import Banner from "./assets/components/Banner";
@@ -20,6 +21,7 @@ import { MyContext } from "./assets/utils/context";
 import { useState } from "react";
 import ProductTable from "./assets/components/ProductTable";
 import ProductForm from "./assets/components/ProductForm";
+
 function App() {
   const [value, setValue] = useState({});
   const [show, setShow] = useState(false);
@@ -132,8 +134,7 @@ function App() {
           <ProductForm show={show} onHide={() => setShow(false)}/>
 
           <ProductTable setShow={e => setShow(e)} show={show}/>
-
-        </main>} />
+          </main>} />
         </Routes>
       </div>
     </MyContext.Provider>

@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
+
 import Swal from 'sweetalert2'; // Importa SweetAlert2
 import NavTabs from './NavTabs';
+
 import Card from './Card';
 import iconoTesoro from '../../assets/images/tesoro.png'
 
@@ -9,6 +11,10 @@ export default function GalleryProducts() {
   const [allProducts, setAllProducts] = useState([]); // Todos los productos
   const [loading, setLoading] = useState(true); // Estado de carga
   const [error, setError] = useState(null); // Estado de error
+
+  const [search, setSearch] = useState(''); // Estado del input de búsqueda
+  const [activeFilter, setActiveFilter] = useState('Todos'); // Filtro activo
+
   const [hiddenTreasures, setHiddenTreasures] = useState([]); // Tesoros ocultos
   const [foundTreasures, setFoundTreasures] = useState(0); // Tesoros encontrados
   const treasuresToFind = 7; // Número total de tesoros a encontrar
@@ -17,6 +23,7 @@ export default function GalleryProducts() {
 
   useEffect(() => {
     const apiURL = 'https://multishopapi.onrender.com/api/productos';
+
 
     const fetchProducts = async () => {
       try {
@@ -125,12 +132,27 @@ export default function GalleryProducts() {
     }
   }, [timeLeft, isGameActive, foundTreasures]);
 
-  const handleTabChange = (filterCategory) => {
-    if (filterCategory === 'Todos') {
+
+  const handleSearch = (e) => {
+    const query = e.target.value.toLowerCase();
+    setSearch(query);
+
+    const filteredProducts = allProducts.filter(
+      (product) =>
+        product.title.toLowerCase().includes(query) ||
+        product.description.toLowerCase().includes(query)
+    );
+    setValue(filteredProducts);
+  };
+
+  const handleFilterChange = (category) => {
+    setActiveFilter(category);
+
+    if (category === 'Todos') {
       setValue(allProducts); // Mostrar todos los productos si selecciona "Todos"
     } else {
       const filteredProducts = allProducts.filter(
-        (product) => product.category === filterCategory
+        (product) => product.category.toLowerCase() === category.toLowerCase()
       );
       setValue(filteredProducts);
     }
@@ -142,6 +164,31 @@ export default function GalleryProducts() {
   return (
     <>
       <div className="container py-5">
+
+        <h2 className="text-center mb-5">Nuestros Productos</h2>
+
+        {/* Input de búsqueda */}
+        <div className="mb-4">
+          <input
+            type="text"
+            placeholder="Buscar productos..."
+            className="form-control"
+            value={search}
+            onChange={handleSearch}
+          />
+        </div>
+
+        {/* Filtros */}
+        <div className="filters d-flex justify-content-center mb-4">
+          {['Todos', 'Ropa', 'Accesorio', 'Maquillaje', 'Hogar', 'Tecnología'].map((filter) => (
+            <button
+              key={filter}
+              className={`btn mx-2 ${activeFilter === filter ? 'btn-primary' : 'btn-outline-primary'}`}
+              onClick={() => handleFilterChange(filter)}
+            >
+              {filter}
+            </button>
+
         <h2 className="text-center mb-3">Nuestros Productos</h2>
         <p className="text-center">
           Encuentra los {treasuresToFind} tesoros ocultos entre los productos y gana puntos.
@@ -201,6 +248,24 @@ export default function GalleryProducts() {
               )}
             </div>
           ))}
+        </div>
+
+        {/* Galería de productos */}
+        <div className="gallery">
+          {value.length > 0 ? (
+            value.map((product) => (
+              <Card
+                key={product._id}
+                id={product._id}
+                url={product.image}
+                title={product.title}
+                text={product.description}
+                precio={product.price}
+              />
+            ))
+          ) : (
+            <p className="text-center">No se encontraron productos.</p>
+          )}
         </div>
       </div>
     </>

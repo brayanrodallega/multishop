@@ -1,5 +1,29 @@
 import { useState, useEffect } from 'react';
 import { Trash2 } from 'lucide-react';
+
+
+export default function Table() {
+  const [products, setProducts] = useState(
+    JSON.parse(localStorage.getItem('productosCarrito')) || []
+  );
+  const [isPayPalReady, setIsPayPalReady] = useState(false);
+
+  const clientId = 'AVlBrTuVr6wxEw869imS021x8s3oT1AM0jtdkvUs4pnfFDrNNCe3H3oIo_imsiso-1C29wJy5ja6iGVR';
+
+  useEffect(() => {
+    // Cargar el SDK de PayPal solo si no está ya disponible
+    if (!window.paypal) {
+      const script = document.createElement('script');
+      script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}`;
+      script.async = true;
+      script.onload = () => setIsPayPalReady(true); // SDK cargado
+      document.body.appendChild(script);
+    } else {
+      setIsPayPalReady(true); // SDK ya cargado
+    }
+  }, [clientId]);
+
+
 import '../styles/table.css';
 
 export default function Table() {
@@ -14,13 +38,67 @@ if(!products) return (<div>
     no hay productos
   </div>);
 
+
   const updateQuantity = (id, newQuantity) => {
-    setProducts(products.map(product => 
-      product.id === id ? { ...product, cantidad: Math.max(1, newQuantity) } : product
-    ));
+    setProducts(
+      products.map((product) =>
+        product.id === id
+          ? { ...product, cantidad: Math.max(1, newQuantity) }
+          : product
+      )
+    );
   };
 
   const removeProduct = (id) => {
+
+    const newProducts = products.filter((product) => product.id !== id);
+    setProducts(newProducts);
+    localStorage.setItem('productosCarrito', JSON.stringify(newProducts));
+    window.dispatchEvent(new Event('storage'));
+  };
+
+  const total = products.reduce(
+    (sum, product) => sum + product.precio * product.cantidad,
+    0
+  );
+
+  useEffect(() => {
+    if (isPayPalReady && products.length > 0) {
+      // Limpia el contenedor antes de renderizar un nuevo botón
+      const paypalContainer = document.getElementById('paypal-button-container');
+      if (paypalContainer) {
+        paypalContainer.innerHTML = '';
+      }
+
+      window.paypal.Buttons({
+        createOrder: (data, actions) => {
+          return actions.order.create({
+            purchase_units: [
+              {
+                amount: {
+                  value: total.toFixed(2), // Total en USD
+                },
+              },
+            ],
+          });
+        },
+        onApprove: (data, actions) => {
+          return actions.order.capture().then((details) => {
+            alert(`Pago completado por ${details.name.given_name}`);
+            console.log('Detalles del pago:', details);
+          });
+        },
+        onError: (err) => {
+          console.error('Error al procesar el pago:', err);
+        },
+      }).render('#paypal-button-container');
+    }
+  }, [isPayPalReady, total, products]);
+
+  if (!products || products.length === 0) {
+    return <div>No hay productos</div>;
+  }
+
     setProducts(products.filter(product => product.id !== id));
     const newProductos = products.filter(product => product.id !== id)
     localStorage.setItem('productosCarrito' , JSON.stringify(newProductos));
@@ -55,6 +133,7 @@ if(!products) return (<div>
     calculateTotal();
   }, [products]);
 
+
   return (
     <div className="container mt-5">
       <h2 className="mb-4">Carrito de compras</h2>
@@ -75,18 +154,23 @@ if(!products) return (<div>
                 <td>{product.title}</td>
                 <td>${product.precio.toFixed(2)} USD</td>
                 <td>
-                  <input 
-                    type="number" 
-                    className="form-control" 
-                    style={{width: '60px'}} 
-                    value={product.cantidad} 
-                    onChange={(e) => updateQuantity(product.id, parseInt(e.target.value))}
+                  <input
+                    type="number"
+                    className="form-control"
+                    style={{ width: '60px' }}
+                    value={product.cantidad}
+                    onChange={(e) =>
+                      updateQuantity(product.id, parseInt(e.target.value))
+                    }
                     min="1"
                   />
                 </td>
                 <td>${(product.precio * product.cantidad).toFixed(2)} USD</td>
                 <td>
-                  <button className="btn btn-link text-danger p-0" onClick={() => removeProduct(product.id)}>
+                  <button
+                    className="btn btn-link text-danger p-0"
+                    onClick={() => removeProduct(product.id)}
+                  >
                     <Trash2 size={18} />
                   </button>
                 </td>
@@ -117,13 +201,15 @@ if(!products) return (<div>
       <div className="d-flex justify-content-between align-items-center mt-4">
         <button className="btn btn-warning">Continuar comprando</button>
         <div className="text-end">
+
         {discountApplied && (
             <div className="text-danger original-price">
               Antes: ${total.toFixed(2)} USD
             </div>
           )}
-          <h4>Total: ${finalTotal} USD</h4>
-          <button className="btn btn-success">Pagar</button>
+         <h4>Total ${total.toFixed(2)} USD</h4>
+          <div id="paypal-button-container"></div>
+
         </div>
       </div>
     </div>
