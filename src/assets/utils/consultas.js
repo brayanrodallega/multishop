@@ -1,4 +1,4 @@
-const basePath = 'http://localhost:3000'
+const basePath = 'https://multishopapi.onrender.com'
 export const loguerUsers = ({username, password}) => {
     return fetch(`${basePath}/api/usuario/login`, {
 
