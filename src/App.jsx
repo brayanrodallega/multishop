@@ -1,103 +1,144 @@
-import { Route, Routes } from 'react-router-dom'
-import './App.css'
-import Banner from './assets/components/Banner'
-import FormContact from './assets/components/FormContact'
-import Nav from './assets/components/Nav'
-import img1 from './assets/images/desktop/img1.jpg'
-import img2 from './assets/images/desktop/img2.jpg'
-import img3 from './assets/images/desktop/img3.jpg'
-import img2M from './assets/images/mobile/img2.jpg'
-import img1M from './assets/images/mobile/img1.jpg'
-import img3M from './assets/images/mobile/img3.jpg'
-import png1 from './assets/images/png/tienda-1-8.png'
-import png2 from './assets/images/png/tienda-2-8.png'
-import GalleryProducts from './assets/components/GalleryProducts'
-import Login from './assets/components/Login'
-import Register from './assets/components/Register'
-import Table from './assets/components/TableCarrito'
-import HienBowl from './assets/components/HienBolw'
-import ProductForm from './assets/components/ProductForm'
-function App() {
 
+import { Route, Routes } from "react-router-dom";
+import "./App.css";
+import Banner from "./assets/components/Banner";
+import FormContact from "./assets/components/FormContact";
+import Nav from "./assets/components/Nav";
+import img1 from "./assets/images/desktop/img1.jpg";
+import img2 from "./assets/images/desktop/img2.jpg";
+import img3 from "./assets/images/desktop/img3.jpg";
+import img2M from "./assets/images/mobile/img2.jpg";
+import img1M from "./assets/images/mobile/img1.jpg";
+import img3M from "./assets/images/mobile/img3.jpg";
+import png1 from "./assets/images/png/tienda-1-8.png";
+import png2 from "./assets/images/png/tienda-2-8.png";
+import GalleryProducts from "./assets/components/GalleryProducts";
+import Login from "./assets/components/Login";
+import Register from "./assets/components/Register";
+import Table from "./assets/components/TableCarrito";
+import HienBowl from "./assets/components/HienBolw";
+import { MyContext } from "./assets/utils/context";
+import { useState } from "react";
+import ProductTable from "./assets/components/ProductTable";
+import ProductForm from "./assets/components/ProductForm";
+
+function App() {
+  const [value, setValue] = useState({});
+  const [show, setShow] = useState(false);
   const desktop = [
     {
-     src: img1,
-     title: 'Bienvenido a Tech Gamer Store',
-     description: 'Preparate para unirte al mundo gamer' 
+      src: img1,
+      title: "La mejor logistica",
+      description: "al alcance de tus manos",
     },
     {
       src: img2,
-     title: 'Conectaté y se el mejor',
-      description: 'Un mundo entero espera por ti' 
-     },
-     {
+      title: "Compras virtuales",
+      description: "completamente seguras",
+    },
+    {
       src: img3,
-     title: 'Productos de alta calidad',
-      description: 'Y como nos gusta, al mejor precio' 
-     },]
+      title: "Hazlo mientra te diviertes",
+      description: "no hay nada mejor",
+    },
+  ];
   const mobile = [
     {
-     src: img1M,
-     title: 'Bienvenido a Tech Gamer Store',
-     description: 'Preparate para unirte al mundo gamer' 
+      src: img1M,
+      title: "La mejor logistica",
+      description: "al alcance de tus manos",
     },
     {
       src: img2M,
-     title: 'Conectaté y se el mejor',
-      description: 'Un mundo entero espera por ti' 
-     },
-     {
+      title: "Compras virtuales",
+      description: "completamente seguras",
+    },
+    {
       src: img3M,
-     title: 'Productos de alta calidad',
-      description: 'Y como nos gusta, al mejor precio' 
-     },]
+     title: "Hazlo mientra te diviertes",
+      description: "no hay nada mejor",
+    },
+  ];
   return (
-    <div className='flex-column justify-content-center main'>
-      <Nav/>
-      <Routes>
-        <Route path='/' element={
-          <>
-            <Banner desktopImages={desktop} mobileImages={mobile}/>
-            <HienBowl 
-            image={png1} 
-            title={"Bienvenido"} 
-            imagePosition='left' 
-            description={"Sunt dolore e iusmod voluptate eiusmod ad sint duis qui dolor in. Mollit nulla nisi tempor velit eiusmod velit cupidatat. Cupidatat exercitation proident dolore deserunt aute ipsum do sint adipisicing do. Fugiat labore adipisicing ipsum anim cillum tempor incididunt." }
-            />
-            
-            <HienBowl 
-            image={png2} 
-            title={"Bienvenido"} 
-            imagePosition='right' 
-            description={"Sunt dolore e iusmod voluptate eiusmod ad sint duis qui dolor in. Mollit nulla nisi tempor velit eiusmod velit cupidatat. Cupidatat exercitation proident dolore deserunt aute ipsum do sint adipisicing do. Fugiat labore adipisicing ipsum anim cillum tempor incididunt." }
-            />
-            
-          </>
-        }/>
-        <Route path='/productos' element={
-          <GalleryProducts />
-        }/>
-        <Route path='/contacto' element={
-          <FormContact />
-        }/>
-        <Route path='/login' element={
-          <Login/>
-        }/>
-        <Route path='/register' element={
-          <Register />
-        } />
+    <MyContext.Provider value={{ value, setValue }}>
+      <div className="flex-column justify-content-center main">
+        <Nav />
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <main>
+                <Banner desktopImages={desktop} mobileImages={mobile} />
+                <HienBowl
+                  image={png1}
+                  title={"Descubre la diversión al comprar"}
+                  imagePosition="left"
+                  description={
+                    "En MultyShop, creemos que las compras deben ser más que una simple transacción: ¡deben ser una experiencia emocionante! Explora nuestra selección de productos cuidadosamente elegidos, encuentra ofertas increíbles y disfruta de una atención al cliente excepcional. Nos esforzamos para que cada compra sea un momento único, lleno de sorpresas y satisfacción."
+                  }
+                />
 
-        <Route path='/carrito' element={
-          <Table/>
-        } />
+                <HienBowl
+                  image={png2}
+                  title={"Impulsa tu negocio con nosotros"}
+                  imagePosition="right"
+                  description={
+                    "En el mundo de la logística, cada minuto cuenta y cada entrega marca la diferencia. En MultyShop, entendemos que el éxito de tu negocio depende de un flujo eficiente y confiable. Por eso, te ofrecemos soluciones logísticas diseñadas para optimizar tus operaciones, reducir costos y garantizar que tus productos lleguen a su destino en perfectas condiciones y a tiempo."
+                  }
+                />
+              </main>
+            }
+          />
+          <Route
+            path="/productos"
+            element={
+              <main>
+                <GalleryProducts />
+              </main>
+            }
+          />
+          <Route
+            path="/contacto"
+            element={
+              <main>
+                <FormContact />
+              </main>
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              <main>
+                <Login />
+              </main>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <main>
+                <Register />
+              </main>
+            }
+          />
 
-        <Route path='/rproducto' element={
-          <ProductForm/>
-        } />
-      </Routes>
-      
-    </div>
-  )
+          <Route
+            path="/carrito"
+            element={
+              <main>
+                <Table />
+              </main>
+            }
+          />
+        <Route path="/dashboard" element={<main>
+          <ProductForm show={show} onHide={() => setShow(false)}/>
+
+          <ProductTable setShow={e => setShow(e)} show={show}/>
+          </main>} />
+        </Routes>
+      </div>
+    </MyContext.Provider>
+  );
 }
 
-export default App
+export default App;

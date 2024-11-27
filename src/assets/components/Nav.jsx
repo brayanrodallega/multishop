@@ -2,13 +2,19 @@ import { ArrowRightEndOnRectangleIcon, ShoppingCartIcon } from '@heroicons/react
 import '../animations/style.css'
 import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
+import { useAppContext } from '../utils/context'
 export default function Nav() {
-    const [productos , setProductos] = useState(JSON.parse(localStorage.getItem('productosCarrito') )|| [])
-    const [login , setLogin] = useState(JSON.parse(localStorage.getItem('login_success')) || false)
+  const {value, setValue} = useAppContext()
+  const [productos , setProductos] = useState(!value.user ? [] : JSON.parse(localStorage.getItem('productosCarrito')))
     useEffect(() => {
         const handleStorageChange = () => {
-          setProductos(JSON.parse(localStorage.getItem('productosCarrito')) || []);
-          setLogin(localStorage.getItem('login_success') || false) 
+          console.log("disparo el evento");
+          
+          console.log(value.user);
+          if(value){
+            
+            setProductos(JSON.parse(localStorage.getItem('productosCarrito')) || []);
+          }
         };
     
         window.addEventListener('storage', handleStorageChange);
@@ -16,10 +22,10 @@ export default function Nav() {
         return () => {
           window.removeEventListener('storage', handleStorageChange);
         };
-      }, []);
+      }, [!value]);
       const handleLogout = () => {
-        setLogin(false)
-        localStorage.removeItem('login_success')
+        setValue(delete value.user)
+        setProductos([])
         window.dispatchEvent(new Event('storage'))
 
       }
@@ -57,8 +63,15 @@ export default function Nav() {
                 <li className="nav-item">
                     <Link className="nav-link" to='/contacto' >Contacto</Link>
                 </li>
+                {
+                  value.user && value.user.role === 'admin' 
+                  ? <li className="nav-item dark:text-red">
+                    <Link className="nav-link" to='/dashboard' >dashboard</Link>
+                </li>
+                : null
+                }
                 <li className="nav-item">
-                    {!login 
+                    {!value.user
                     ?<Link className="nav-link" to="/login">Login</Link>
                     :<button onClick={handleLogout} className='bg-danger px-2 rounded-1 ms-2' >
                         <ArrowRightEndOnRectangleIcon  className="text-white" style={{ width: '24px', height: '24px' }}/>    
