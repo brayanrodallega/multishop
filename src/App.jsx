@@ -19,40 +19,42 @@ import HienBowl from "./assets/components/HienBolw";
 import { MyContext } from "./assets/utils/context";
 import { useState } from "react";
 import ProductTable from "./assets/components/ProductTable";
+import ProductForm from "./assets/components/ProductForm";
 function App() {
   const [value, setValue] = useState({});
+  const [show, setShow] = useState(false);
   const desktop = [
     {
       src: img1,
-      title: "Bienvenido a Tech Gamer Store",
-      description: "Preparate para unirte al mundo gamer",
+      title: "La mejor logistica",
+      description: "al alcance de tus manos",
     },
     {
       src: img2,
-      title: "Conectaté y se el mejor",
-      description: "Un mundo entero espera por ti",
+      title: "Compras virtuales",
+      description: "completamente seguras",
     },
     {
       src: img3,
-      title: "Productos de alta calidad",
-      description: "Y como nos gusta, al mejor precio",
+      title: "Hazlo mientra te diviertes",
+      description: "no hay nada mejor",
     },
   ];
   const mobile = [
     {
       src: img1M,
-      title: "Bienvenido a Tech Gamer Store",
-      description: "Preparate para unirte al mundo gamer",
+      title: "La mejor logistica",
+      description: "al alcance de tus manos",
     },
     {
       src: img2M,
-      title: "Conectaté y se el mejor",
-      description: "Un mundo entero espera por ti",
+      title: "Compras virtuales",
+      description: "completamente seguras",
     },
     {
       src: img3M,
-      title: "Productos de alta calidad",
-      description: "Y como nos gusta, al mejor precio",
+     title: "Hazlo mientra te diviertes",
+      description: "no hay nada mejor",
     },
   ];
   return (
@@ -67,19 +69,19 @@ function App() {
                 <Banner desktopImages={desktop} mobileImages={mobile} />
                 <HienBowl
                   image={png1}
-                  title={"Bienvenido"}
+                  title={"Descubre la diversión al comprar"}
                   imagePosition="left"
                   description={
-                    "Sunt dolore e iusmod voluptate eiusmod ad sint duis qui dolor in. Mollit nulla nisi tempor velit eiusmod velit cupidatat. Cupidatat exercitation proident dolore deserunt aute ipsum do sint adipisicing do. Fugiat labore adipisicing ipsum anim cillum tempor incididunt."
+                    "En MultyShop, creemos que las compras deben ser más que una simple transacción: ¡deben ser una experiencia emocionante! Explora nuestra selección de productos cuidadosamente elegidos, encuentra ofertas increíbles y disfruta de una atención al cliente excepcional. Nos esforzamos para que cada compra sea un momento único, lleno de sorpresas y satisfacción."
                   }
                 />
 
                 <HienBowl
                   image={png2}
-                  title={"Bienvenido"}
+                  title={"Impulsa tu negocio con nosotros"}
                   imagePosition="right"
                   description={
-                    "Sunt dolore e iusmod voluptate eiusmod ad sint duis qui dolor in. Mollit nulla nisi tempor velit eiusmod velit cupidatat. Cupidatat exercitation proident dolore deserunt aute ipsum do sint adipisicing do. Fugiat labore adipisicing ipsum anim cillum tempor incididunt."
+                    "En el mundo de la logística, cada minuto cuenta y cada entrega marca la diferencia. En MultyShop, entendemos que el éxito de tu negocio depende de un flujo eficiente y confiable. Por eso, te ofrecemos soluciones logísticas diseñadas para optimizar tus operaciones, reducir costos y garantizar que tus productos lleguen a su destino en perfectas condiciones y a tiempo."
                   }
                 />
               </main>
@@ -126,11 +128,13 @@ function App() {
               </main>
             }
           />
-        </Routes>
-        <Routes path="/dashboard" element={<main>
-          <ProductTable />
+        <Route path="/dashboard" element={<main>
+          <ProductForm show={show} onHide={() => setShow(false)}/>
+
+          <ProductTable setShow={e => setShow(e)} show={show}/>
 
         </main>} />
+        </Routes>
       </div>
     </MyContext.Provider>
   );

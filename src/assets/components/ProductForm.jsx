@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
-import { Modal, Form, Button } from 'react-bootstrap';
+import { CloudUpload } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Modal, Form, Button,} from 'react-bootstrap';
 
 // eslint-disable-next-line react/prop-types
 export default function ProductForm({ show, onHide, onSubmit, initialData = null }) {
@@ -14,16 +15,27 @@ export default function ProductForm({ show, onHide, onSubmit, initialData = null
     amount: '',
     category: ''
   });
+  const [file, setFile] = useState(null);
+  const [preview, setPreview] = useState('');
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (initialData) {
       setFormData(initialData);
+      setPreview(initialData.image);
     }
   }, [initialData]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    const form = new FormData();
+    for (let key in formData) {
+      form.append(key, formData[key]);
+    }
+    if (file) {
+      form.append('file', file);
+    }
+    onSubmit(form);
     onHide();
   };
 
@@ -35,12 +47,30 @@ export default function ProductForm({ show, onHide, onSubmit, initialData = null
     }));
   };
 
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    setFile(selectedFile);
+    if (selectedFile) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreview(reader.result);
+      };
+      reader.readAsDataURL(selectedFile);
+    } else {
+      setPreview('');
+    }
+  };
+
+  const triggerFileInput = () => {
+    fileInputRef.current.click();
+  };
+
   return (
     <Modal show={show} onHide={onHide} size="lg">
       <Modal.Header closeButton>
         <Modal.Title>{initialData ? 'Editar' : 'Agregar'} Producto</Modal.Title>
       </Modal.Header>
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={handleSubmit} encType="multipart/form-data">
         <Modal.Body>
           <div className="row">
             <div className="col-md-6">
@@ -86,14 +116,31 @@ export default function ProductForm({ show, onHide, onSubmit, initialData = null
           <div className="row">
             <div className="col-md-6">
               <Form.Group className="mb-3">
-                <Form.Label>URL de Imagen*</Form.Label>
-                <Form.Control
-                  type="url"
-                  name="image"
-                  value={formData.image}
-                  onChange={handleChange}
-                  required
-                />
+                <Form.Label>Imagen del Producto*</Form.Label>
+                <div 
+                  className="d-flex flex-column align-items-center justify-content-center p-4 border rounded cursor-pointer"
+                  onClick={triggerFileInput}
+                  style={{
+                    height: '200px',
+                    background: preview ? `url(${preview}) no-repeat center/cover` : '#f8f9fa',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {!preview && (
+                    <>
+                      <CloudUpload size={48} className="mb-2" />
+                      <p className="text-muted mb-0">Haz clic para subir una imagen</p>
+                    </>
+                  )}
+                  <Form.Control
+                    type="file"
+                    name="file"
+                    onChange={handleFileChange}
+                    ref={fileInputRef}
+                    className="d-none"
+                    accept="image/*"
+                  />
+                </div>
               </Form.Group>
             </div>
             <div className="col-md-6">
@@ -106,11 +153,20 @@ export default function ProductForm({ show, onHide, onSubmit, initialData = null
                   onChange={handleChange}
                 />
               </Form.Group>
+              <Form.Group className="mb-3">
+                <Form.Label>Link</Form.Label>
+                <Form.Control
+                  type="url"
+                  name="link"
+                  value={formData.link}
+                  onChange={handleChange}
+                />
+              </Form.Group>
             </div>
           </div>
 
           <div className="row">
-            <div className="col-md-4">
+            <div className="col-md-6">
               <Form.Group className="mb-3">
                 <Form.Label>Precio*</Form.Label>
                 <Form.Control
@@ -123,7 +179,7 @@ export default function ProductForm({ show, onHide, onSubmit, initialData = null
                 />
               </Form.Group>
             </div>
-            <div className="col-md-4">
+            <div className="col-md-6">
               <Form.Group className="mb-3">
                 <Form.Label>Cantidad*</Form.Label>
                 <Form.Control
@@ -132,17 +188,6 @@ export default function ProductForm({ show, onHide, onSubmit, initialData = null
                   value={formData.amount}
                   onChange={handleChange}
                   required
-                />
-              </Form.Group>
-            </div>
-            <div className="col-md-4">
-              <Form.Group className="mb-3">
-                <Form.Label>Link</Form.Label>
-                <Form.Control
-                  type="url"
-                  name="link"
-                  value={formData.link}
-                  onChange={handleChange}
                 />
               </Form.Group>
             </div>

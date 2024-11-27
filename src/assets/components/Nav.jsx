@@ -4,13 +4,17 @@ import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { useAppContext } from '../utils/context'
 export default function Nav() {
-    const [productos , setProductos] = useState(JSON.parse(localStorage.getItem('productosCarrito') )|| [])
-    const {value, setValue} = useAppContext()
-    const [login , setLogin] = useState(JSON.parse(localStorage.getItem('login_success')) || false)
+  const {value, setValue} = useAppContext()
+  const [productos , setProductos] = useState(!value.user ? [] : JSON.parse(localStorage.getItem('productosCarrito')))
     useEffect(() => {
         const handleStorageChange = () => {
-          setProductos(JSON.parse(localStorage.getItem('productosCarrito')) || []);
-          setLogin(localStorage.getItem('login_success') || false) 
+          console.log("disparo el evento");
+          
+          console.log(value.user);
+          if(value){
+            
+            setProductos(JSON.parse(localStorage.getItem('productosCarrito')) || []);
+          }
         };
     
         window.addEventListener('storage', handleStorageChange);
@@ -18,16 +22,17 @@ export default function Nav() {
         return () => {
           window.removeEventListener('storage', handleStorageChange);
         };
-      }, []);
+      }, [!value]);
       const handleLogout = () => {
         setValue(delete value.user)
+        setProductos([])
         window.dispatchEvent(new Event('storage'))
 
       }
   return (
     <nav className=" container-fluid navbar navbar-expand-lg navbar-dark bg-dark">
     <div className="container">
-        <a className="navbar-brand" href="#"><h1 className="title">Tech Gamer Store
+        <a className="navbar-brand" href="#"><h1 className="title">MultyShop
         <div className="aurora">
       <div className="aurora__item"></div>
       <div className="aurora__item"></div>

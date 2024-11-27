@@ -20,3 +20,11 @@ export const registerUsers = ({name, username, email, password , role}) => {
     .then(res => res.json())
     .catch(err => console.error(err))
 }
+export const obtenerProductos = () => {
+    return fetch(`${basePath}/api/productos/`, {
+        method: 'GET',
+        headers: { "Content-Type": "application/json"}
+    })
+    .then(res => res.json())
+    .catch(err => console.error(err))
+}

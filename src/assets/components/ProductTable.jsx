@@ -1,15 +1,28 @@
 import { Pencil, PlusCircle, Search, Trash } from 'lucide-react';
-import  { useState } from 'react';
+import  { useEffect, useState } from 'react';
 import { Table, Button, Container, Form, InputGroup } from 'react-bootstrap';
+import { obtenerProductos } from '../utils/consultas';
 // import { PencilFill, TrashFill, PlusCircle, Search } from 'react-bootstrap-icons';
 
 // eslint-disable-next-line react/prop-types
-export default function ProductTable({ products = [], onEdit, onDelete }) {
+export default function ProductTable({show , setShow, onEdit, onDelete }) {
   const [searchTerm, setSearchTerm] = useState('');
-
-  const filteredProducts = products.filter(product =>
-    product.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const [products, setProducts] = useState([]);
+  useEffect(() => {
+    obtenerProductos()
+    .then( res => setProducts(res.data))
+    .catch(err => console.log(err))
+  }, [])
+  if(!products || products.length <1) return null
+  console.log(products);
+  
+//   const filteredProducts = products.filter(product =>
+//   {  if(product.title && searchTerm){
+//         product.title.toLowerCase().includes(searchTerm.toLowerCase())
+//     }
+// }
+//   );
+  if(!products)return null
 
   return (
     <Container fluid className="py-4">
@@ -24,7 +37,7 @@ export default function ProductTable({ products = [], onEdit, onDelete }) {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </InputGroup>
-        <Button variant="dark" className="d-flex align-items-center gap-2">
+        <Button variant="dark" onClick={() => setShow(!show)} className="d-flex align-items-center gap-2">
           <PlusCircle /> Agregar Producto
         </Button>
       </div>
@@ -44,7 +57,7 @@ export default function ProductTable({ products = [], onEdit, onDelete }) {
             </tr>
           </thead>
           <tbody>
-            {filteredProducts.map((product) => (
+            {products.map((product) => (
               <tr key={product._id}>
                 <td style={{ width: '100px' }}>
                   <img
@@ -56,7 +69,7 @@ export default function ProductTable({ products = [], onEdit, onDelete }) {
                 </td>
                 <td>{product.title}</td>
                 <td>{product.description}</td>
-                <td>${product.price.toFixed(2)}</td>
+                <td>${product.price}</td>
                 <td>{product.amount}</td>
                 <td>
                   <span className={`badge ${product.status ? 'bg-success' : 'bg-danger'}`}>
@@ -81,7 +94,7 @@ export default function ProductTable({ products = [], onEdit, onDelete }) {
       </div>
 
       <div className="d-flex justify-content-between align-items-center mt-3">
-        <span>Mostrando {filteredProducts.length} de {products.length} productos</span>
+        <span>Mostrando {products.length} de {products.length} productos</span>
       </div>
     </Container>
   );

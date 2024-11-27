@@ -1,7 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { registerUsers } from "../utils/consultas";
-import { useAppContext } from "../utils/context";
 
 
 export default function Register() {
