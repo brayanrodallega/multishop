@@ -2,8 +2,9 @@
   width: 100vw;
   height: 100vh;
 }
-.main{
-  height: 70vh;
+  main{
+  height: 85vh;
+  overflow: scroll;
 }
 .icon{
   width: clamp(35px, 3.5vw, 1.26rem);

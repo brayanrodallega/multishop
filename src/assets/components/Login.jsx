@@ -1,48 +1,76 @@
-import { Link, useNavigate } from 'react-router-dom'
-import '../styles/Forms.style.css'
-import Swal from 'sweetalert2'
-
+import { Link, useNavigate } from "react-router-dom";
+import "../styles/Forms.style.css";
+import Swal from "sweetalert2";
+import { useAppContext } from "../utils/context";
+import { loguerUsers } from "../utils/consultas";
 export default function Login() {
-    const navigate = useNavigate()
-const handleSubmit = (e) => {
-    e.preventDefault()
+  const { value, setValue } = useAppContext();
 
-    let email = document.querySelector('#email').value
-    let password = document.querySelector('#password').value
+  const navigate = useNavigate();
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-    let Users = JSON.parse(localStorage.getItem('users')) || []
-    let validUser = Users.find(user => user.email === email && user.password === password)
+    let username = document.querySelector("#username").value;
+    let password = document.querySelector("#password").value;
+    loguerUsers({ username, password })
+      .then((res) => {
+        console.log(res);
+        if (res.status === 200) {
+          Swal.fire({
+              icon: 'success',
+              title: 'Inicio de Sesion Exitoso',
+              text: `Bienvenido ${res.data.name}`
+          })
 
-    if(!validUser){
+          setValue({ ...value, user: res.data });
+          window.dispatchEvent(new Event("storage"));
+
+          return navigate("/");
+        }
         return Swal.fire({
-            icon: 'error',
-            title: 'Error de Datos',
-            text: 'El usuario y/o contraseña son incorrectos'
-        })
-        
-    }
-    Swal.fire({
-        icon: 'success',
-        title: 'Inicio de Sesion Exitoso',
-        text: `Bienvenido ${validUser.name}`
-    })
-    localStorage.setItem('login_success' , true)
-    window.dispatchEvent(new Event('storage'))
+                    icon: 'error',
+                    title: 'Error de Datos',
+                    text: res.message
+                })
+      })
+      .catch((err) => console.error(err));
+  };
+  // let Users = JSON.parse(localStorage.getItem('users')) || []
+  // let validUser = Users.find(user => user.username === username && user.password === password)
 
-    navigate('/')}
+  // if(!validUser){
+  //     return Swal.fire({
+  //         icon: 'error',
+  //         title: 'Error de Datos',
+  //         text: 'El usuario y/o contraseña son incorrectos'
+  //     })
+
+  // }
+
+  // setValue({...value, user: validUser})
+  // localStorage.setItem('login_success' , true)
+
   return (
     <div>
-       <section>
+      <section>
         <h2>Login</h2>
         <form onSubmit={handleSubmit} id="loginForm">
-            <label>Mail</label>
-            <input type="email" placeholder="..." id="email" required autoFocus />
-            <label>Contraseña</label>
-            <input type="password" placeholder="..." id="password" required />
-            <input type="submit" value="Ingresar" />
+          <label>Username</label>
+          <input
+            type="username"
+            placeholder="..."
+            id="username"
+            required
+            autoFocus
+          />
+          <label>Contraseña</label>
+          <input type="password" placeholder="..." id="password" required />
+          <input type="submit" value="Ingresar" />
         </form>
-        <p>¿No tienes una cuenta? <Link to='/register'>¡Regístrate!</Link></p>
-     </section>
+        <p>
+          ¿No tienes una cuenta? <Link to="/register">¡Regístrate!</Link>
+        </p>
+      </section>
     </div>
-  )
+  );
 }

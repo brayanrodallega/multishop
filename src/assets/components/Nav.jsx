@@ -2,8 +2,10 @@ import { ArrowRightEndOnRectangleIcon, ShoppingCartIcon } from '@heroicons/react
 import '../animations/style.css'
 import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
+import { useAppContext } from '../utils/context'
 export default function Nav() {
     const [productos , setProductos] = useState(JSON.parse(localStorage.getItem('productosCarrito') )|| [])
+    const {value, setValue} = useAppContext()
     const [login , setLogin] = useState(JSON.parse(localStorage.getItem('login_success')) || false)
     useEffect(() => {
         const handleStorageChange = () => {
@@ -57,8 +59,15 @@ export default function Nav() {
                 <li className="nav-item">
                     <Link className="nav-link" to='/contacto' >Contacto</Link>
                 </li>
+                {
+                  value?.user 
+                  ? <li className="nav-item dark:text-red">
+                    <Link className="nav-link" to='/dashboard' >dashboard</Link>
+                </li>
+                : null
+                }
                 <li className="nav-item">
-                    {!login 
+                    {!value.user
                     ?<Link className="nav-link" to="/login">Login</Link>
                     :<button onClick={handleLogout} className='bg-danger px-2 rounded-1 ms-2' >
                         <ArrowRightEndOnRectangleIcon  className="text-white" style={{ width: '24px', height: '24px' }}/>    

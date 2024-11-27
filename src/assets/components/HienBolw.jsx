@@ -18,8 +18,8 @@ const HienBowl = ({ image, title, description, imagePosition = "left" }) => {
           </div>
         </div>
         <div className="col-md-6">
-          <h2 className="text-uppercase text-light mb-3">{title}</h2>
-          <p className="text-light">{description}</p>
+          <h2 className="text-uppercase mb-3">{title}</h2>
+          <p className="text-muted">{description}</p>
         </div>
       </div>
     </div>
